@@ -213,13 +213,24 @@
   }
 
   /* ---------- 포토 갤러리 ---------- */
+  /* 갤러리 사진은 각 하위 페이지 안에 있어 메인 recordMap 에 없다.
+     Oopy 가 이미 렌더링해 둔(숨긴) 원본 카드의 <img> 에서 가져온다. */
   function coverUrl(row) {
     try {
       var src = row.format && row.format.page_cover;
-      if (!src) return '';
-      if (src.indexOf('http') !== 0) src = 'https://www.notion.so' + src;
-      return 'https://oopy.lazyrockets.com/api/v2/notion/image?src=' +
-        encodeURIComponent(src) + '&blockId=' + row.id + '&width=800';
+      if (src) {
+        if (src.indexOf('http') !== 0) src = 'https://www.notion.so' + src;
+        return 'https://oopy.lazyrockets.com/api/v2/notion/image?src=' +
+          encodeURIComponent(src) + '&blockId=' + row.id + '&width=800';
+      }
+      var card = document.querySelector('[data-block-id="' + row.id + '"]');
+      if (!card) return '';
+      var imgs = [].slice.call(card.querySelectorAll('img'));
+      for (var i = 0; i < imgs.length; i++) {
+        var u = imgs[i].getAttribute('src') || '';
+        if (u && u.indexOf('/emoji/') < 0 && u.indexOf('data:') !== 0) return u;
+      }
+      return '';
     } catch (e) { return ''; }
   }
   function gallery(anchor) {

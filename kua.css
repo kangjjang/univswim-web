@@ -1,0 +1,126 @@
+/* 한국대학수영연맹 univswim.kr — 커스텀 스타일
+   https://github.com/kangjjang/univswim-web  (Oopy 커스텀 코드 용량 제한 우회) */
+:root{
+  --kn:#1B3A6B; --kn2:#12274A; --ks:#F4F6F9; --kl:#E2E7EE; --kl2:#C9D3DE;
+  --ki:#222; --ki2:#555F6B; --ki3:#8A939E; --kw:1200px;
+  --page-cover-height:440px;
+}
+@media(max-width:900px){ :root{ --page-cover-height:320px } }
+
+/* ===== 히어로 ===== */
+.kh{position:relative;width:100%;align-self:stretch}
+.kv{position:absolute;top:0;left:0;right:0;height:var(--page-cover-height);z-index:2;display:flex;align-items:center}
+.kv:before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(9,22,45,.86),rgba(13,32,63,.66) 52%,rgba(16,40,76,.42))}
+.ki{position:relative;width:100%;max-width:var(--kw);margin:0 auto;padding:0 96px}
+.kv h1{margin:0;color:#fff;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.18}
+.kv p{margin:12px 0 0;color:rgba(255,255,255,.76);font-size:14.5px;letter-spacing:.06em}
+.kc{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.kb{display:inline-flex;align-items:center;height:46px;padding:0 26px;font-size:15.5px;
+  font-weight:600;text-decoration:none;border:1px solid transparent;transition:background .16s}
+.kb1{background:var(--kn);color:#fff;border-color:#2b4d82}
+.kb1:hover{background:#24487f}
+.kb2{background:#fff;color:var(--kn);border-color:#fff}
+.kb2:hover{background:#eef2f8}
+
+/* ===== 바로가기 띠 ===== */
+.kq{width:100%;align-self:stretch;background:var(--ks);border-bottom:1px solid var(--kl)}
+.kq ul{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:var(--kw);
+  margin:0 auto;padding:30px 96px;list-style:none}
+.kq a{display:flex;flex-direction:column;align-items:center;gap:11px;text-decoration:none;color:var(--ki)}
+.kq i{width:58px;height:58px;border-radius:50%;background:#fff;display:grid;place-items:center;
+  border:1px solid var(--kl);transition:background .18s,transform .18s}
+.kq svg{width:25px;height:25px;stroke:var(--kn);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.kq a:hover i{background:var(--kn);border-color:var(--kn);transform:translateY(-2px)}
+.kq a:hover svg{stroke:#fff}
+.kq span{font-size:14px;font-weight:500}
+
+/* ===== 노션 기본 요소 정리 ===== */
+.kon .page-title,.kon .khd,
+.kon [data-block-id^="5977"]{display:none}
+.kon .notion-page-content{padding-top:0}
+/* 2단 컬럼 해제 → 전체폭 섹션 */
+.kon [data-block-id^="907ba871"]{display:block!important}
+.kon [data-block-id^="907ba871"]>.notion-column-block{width:100%!important;margin:0!important}
+/* 원본 컬렉션 뷰는 JS가 다시 그린 뒤 숨김 */
+.kon .kua-src{display:none!important}
+
+/* ===== 섹션 공통 ===== */
+.ksec{max-width:var(--kw);margin:0 auto;padding:48px 96px 0}
+.ksec.band{max-width:none;background:var(--ks);padding:48px 0;margin-top:48px}
+.ksec.band>.kin{max-width:var(--kw);margin:0 auto;padding:0 96px}
+.khd2{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.khd2 h2{margin:0;font-size:25px;font-weight:700;color:var(--kn);letter-spacing:-.01em}
+.kmore{font-size:13px;color:var(--ki3);font-weight:500;text-decoration:none;white-space:nowrap}
+.kmore:hover{color:var(--kn)}
+.krule{height:2px;background:var(--kn);margin-bottom:22px}
+
+/* ===== 대회 일정 카드 ===== */
+.kmeets{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.kmeet{background:#fff;border:1px solid var(--kl2);padding:22px 22px 20px;
+  display:flex;flex-direction:column;gap:14px;text-decoration:none;color:inherit;transition:.18s}
+.kmeet:hover{border-color:var(--kn);box-shadow:0 8px 22px rgba(27,58,107,.09)}
+.kbadge{align-self:flex-start;font-size:11.5px;font-weight:700;color:#fff;padding:4px 10px;letter-spacing:.02em}
+.kbadge.open{background:var(--kn)} .kbadge.prep{background:#D98A1F} .kbadge.done{background:#999}
+.kmeet h3{margin:0;font-size:18.5px;font-weight:700;line-height:1.4;letter-spacing:-.01em;color:var(--ki)}
+.kmeet dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kmeet dt{color:var(--ki3);font-weight:500}
+.kmeet dd{margin:0;color:var(--ki2);font-variant-numeric:tabular-nums}
+
+/* ===== 새소식 ===== */
+.knews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 34px}
+.kncol h3{margin:0;font-size:17px;font-weight:700;color:var(--ki)}
+.knhead{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-bottom:10px;border-bottom:2px solid var(--kn)}
+.kncol ul{margin:2px 0 0;padding:0;list-style:none}
+.kncol li{border-bottom:1px dotted var(--kl2)}
+.kncol li a{display:flex;align-items:baseline;gap:12px;padding:11px 2px;font-size:14.5px;
+  color:var(--ki2);text-decoration:none}
+.kncol li a:hover{color:var(--kn)}
+.kncol .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kncol .d{flex:none;font-size:12.5px;color:var(--ki3);font-variant-numeric:tabular-nums}
+.kempty{padding:14px 2px;font-size:13.5px;color:var(--ki3)}
+
+/* ===== 정보 카드 ===== */
+.kinfo{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.kinfo a{background:#fff;border:1px solid var(--kl);padding:24px;display:flex;
+  align-items:center;justify-content:space-between;gap:16px;text-decoration:none;color:inherit;transition:.18s}
+.kinfo a:hover{border-color:var(--kn);box-shadow:0 8px 22px rgba(27,58,107,.09)}
+.kinfo h3{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.kinfo p{margin:6px 0 0;font-size:13.5px;color:var(--ki3)}
+.karrow{flex:none;width:42px;height:42px;border-radius:50%;background:#E8EDF5;display:grid;place-items:center;transition:.18s}
+.karrow svg{width:18px;height:18px;stroke:var(--kn);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kinfo a:hover .karrow{background:var(--kn)}
+.kinfo a:hover .karrow svg{stroke:#fff}
+
+/* ===== 갤러리 ===== */
+.kgal{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.kgal a{text-decoration:none;color:inherit}
+.kgal .shot{aspect-ratio:4/3;background:var(--kl2);display:grid;place-items:center;
+  color:#7F8B98;font-size:12.5px;overflow:hidden}
+.kgal .shot img{width:100%;height:100%;object-fit:cover;display:block}
+.kgal figure{margin:0}
+.kgal figcaption{padding-top:11px;font-size:14.5px;font-weight:500;color:var(--ki)}
+
+/* ===== 푸터 ===== */
+.kfoot{width:100%;align-self:stretch;background:#333;color:#A7AEB6;font-size:13px;margin-top:56px}
+.kfoot .kin{max-width:var(--kw);margin:0 auto;padding:30px 96px 36px}
+.kfl{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:16px}
+.kfl a{color:#E4E7EA;font-weight:600;font-size:13.5px;text-decoration:none}
+.kfl a:hover{color:#fff;text-decoration:underline}
+.kfi{display:flex;flex-wrap:wrap;gap:6px 14px;line-height:1.8}
+.kfc{margin:12px 0 0;color:#7C838B;font-size:12.5px}
+
+/* ===== 모바일 ===== */
+@media(max-width:900px){
+  .ki{padding:0 24px} .kv h1{font-size:30px}
+  .kc{flex-direction:column;align-items:stretch} .kb{justify-content:center}
+  .kq ul{grid-template-columns:repeat(3,1fr);padding:22px 24px;gap:4px}
+  .ksec{padding:40px 24px 0} .ksec.band>.kin{padding:0 24px}
+  .khd2 h2{font-size:21px}
+  .kmeets,.knews,.kinfo{grid-template-columns:1fr}
+  .kgal{grid-template-columns:repeat(2,1fr)}
+  .kfoot .kin{padding:26px 24px 30px}
+}
+@media(max-width:420px){ .kgal{grid-template-columns:1fr} }
+@media(prefers-reduced-motion:reduce){ *{transition:none!important} }

@@ -223,12 +223,19 @@
         return 'https://oopy.lazyrockets.com/api/v2/notion/image?src=' +
           encodeURIComponent(src) + '&blockId=' + row.id + '&width=800';
       }
-      var card = document.querySelector('[data-block-id="' + row.id + '"]');
-      if (!card) return '';
-      var imgs = [].slice.call(card.querySelectorAll('img'));
-      for (var i = 0; i < imgs.length; i++) {
-        var u = imgs[i].getAttribute('src') || '';
-        if (u && u.indexOf('/emoji/') < 0 && u.indexOf('data:') !== 0) return u;
+      return imgFromSource(row.id);
+    } catch (e) { return ''; }
+  }
+  function imgFromSource(rid) {
+    try {
+      var cards = [].slice.call(document.querySelectorAll('[data-block-id="' + rid + '"]'));
+      for (var c = 0; c < cards.length; c++) {
+        if (cards[c].closest('.kgal')) continue;           // 내가 만든 쪽은 건너뜀
+        var imgs = [].slice.call(cards[c].querySelectorAll('img'));
+        for (var i = 0; i < imgs.length; i++) {
+          var u = imgs[i].getAttribute('src') || '';
+          if (u && u.indexOf('/emoji/') < 0 && u.indexOf('data:') !== 0) return u;
+        }
       }
       return '';
     } catch (e) { return ''; }
@@ -236,16 +243,31 @@
   function gallery(anchor) {
     var c = coll('갤러리'); if (!c || !c.rows.length) return false;
     var list = c.rows.map(function (r) {
-      return { title: titleOf(r, c), href: hrefOf(r), img: coverUrl(r) };
+      return { title: titleOf(r, c), href: hrefOf(r), img: coverUrl(r), rid: r.id };
     }).filter(function (o) { return o.title; });
     if (!list.length) return false;
     var html = '<div class="kgal">' + list.slice(0, 4).map(function (g) {
-      return '<a href="' + esc(g.href) + '"><figure><div class="shot">' +
+      return '<a href="' + esc(g.href) + '"><figure><div class="shot" data-rid="' + esc(g.rid) + '">' +
         (g.img ? '<img src="' + esc(g.img) + '" alt="' + esc(g.title) + '" loading="lazy">' : '사진') +
         '</div><figcaption>' + esc(g.title) + '</figcaption></figure></a>';
     }).join('') + '</div>';
     anchor.appendChild(section('', '포토 갤러리', '/community/gallery', '더보기 +', html));
-    hideSrc('갤러리');
+    /* Oopy 가 갤러리 카드를 늦게 렌더링하므로, 사진이 붙을 때까지 몇 번 더 시도한다.
+       (사진을 다 채우기 전에는 원본을 숨기지 않는다) */
+    var tries = 0;
+    (function fill() {
+      var left = [].slice.call(document.querySelectorAll('.kgal .shot[data-rid]:not(.done)'));
+      left.forEach(function (box) {
+        var u = imgFromSource(box.getAttribute('data-rid'));
+        if (u) {
+          box.innerHTML = '<img src="' + esc(u) + '" alt="" loading="lazy">';
+          box.classList.add('done');
+        }
+      });
+      var remaining = document.querySelectorAll('.kgal .shot[data-rid]:not(.done)').length;
+      if (remaining && ++tries < 12) { setTimeout(fill, 700); return; }
+      hideSrc('갤러리');
+    })();
     return true;
   }
 

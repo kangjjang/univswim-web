@@ -299,8 +299,8 @@
         var host = document.createElement('div');
         host.className = 'kua-built';
         /* React 가 관리하는 .notion-page-content 안에 넣으면 리렌더 때 지워진다.
-           반드시 형제로 삽입한다. */
-        content.parentNode.insertBefore(host, content.nextSibling);
+           형제로 삽입하되, 시안 순서(섹션 → 기관 로고 → 푸터)를 위해 content 앞에 둔다. */
+        content.parentNode.insertBefore(host, content);
         try { meets(host); } catch (e) {}
         try { news(host); } catch (e) {}
         try { info(host); } catch (e) {}

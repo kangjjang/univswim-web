@@ -38,12 +38,16 @@
 /* ===== 노션 기본 요소 정리 ===== */
 .kon .page-title,.kon .khd,
 .kon [data-block-id^="5977"]{display:none}
-.kon .notion-page-content{padding-top:0}
+.kon .notion-page-content{padding-top:0;padding-bottom:0}
 /* 2단 컬럼 해제 → 전체폭 섹션 */
 .kon [data-block-id^="907ba871"]{display:block!important}
 .kon [data-block-id^="907ba871"]>.notion-column-block{width:100%!important;margin:0!important}
 /* 원본 컬렉션 뷰는 JS가 다시 그린 뒤 숨김 */
 .kon .kua-src{display:none!important}
+/* 컬렉션을 들어냈을 때 남는 빈 문단들 */
+.kon [data-block-id^="4b1ecac9"],.kon [data-block-id^="96849d99"],
+.kon [data-block-id^="8d2453a5"],.kon [data-block-id^="999b7a46"],
+.kon [data-block-id^="4f7edb93"],.kon [data-block-id^="1561e77b"]{display:none}
 
 /* ===== 섹션 공통 ===== */
 .ksec{max-width:var(--kw);margin:0 auto;padding:48px 96px 0}

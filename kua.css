@@ -48,6 +48,10 @@
 .kon [data-block-id^="4b1ecac9"],.kon [data-block-id^="96849d99"],
 .kon [data-block-id^="8d2453a5"],.kon [data-block-id^="999b7a46"],
 .kon [data-block-id^="4f7edb93"],.kon [data-block-id^="1561e77b"]{display:none}
+/* 새 푸터가 대체하므로 노션 푸터 텍스트/구분선 숨김 */
+.kon [data-block-id^="c0353906"],
+.kon [data-block-id^="8619b00d"],
+.kon [data-block-id^="dc8636ce"]{display:none}
 
 /* ===== 섹션 공통 ===== */
 .ksec{max-width:var(--kw);margin:0 auto;padding:48px 96px 0}

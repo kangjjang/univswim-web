@@ -125,7 +125,11 @@
       var v = id && rm.block && rm.block[id] ? unwrap(rm.block[id]) : null;
       if (!v || !v.collection_id) return;
       var cv = unwrap(rm.collection[v.collection_id]);
-      if (cv && joinRT(cv.name) === name) b.classList.add('kua-src');
+      if (cv && joinRT(cv.name) === name) {
+        b.classList.add('kua-src');
+        var cl = b.closest && b.closest('.notion-column_list-block');
+        if (cl) cl.classList.add('kua-src');
+      }
     });
   }
   function section(cls, title, moreHref, moreLabel, inner) {
@@ -254,12 +258,16 @@
     if (!isHome()) { document.documentElement.classList.remove('kon'); return true; }
     if (!hero()) return false;
     document.documentElement.classList.add('kon');
-    if (!built) {
+    if (!built || !document.querySelector('.kua-built')) {
       var content = document.querySelector('.notion-page-content');
       if (content && rmap()) {
+        var old = document.querySelector('.kua-built');
+        if (old) old.remove();
         var host = document.createElement('div');
         host.className = 'kua-built';
-        content.appendChild(host);
+        /* React 가 관리하는 .notion-page-content 안에 넣으면 리렌더 때 지워진다.
+           반드시 형제로 삽입한다. */
+        content.parentNode.insertBefore(host, content.nextSibling);
         try { meets(host); } catch (e) {}
         try { news(host); } catch (e) {}
         try { info(host); } catch (e) {}
@@ -274,6 +282,7 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
   var path = location.pathname;
   new MutationObserver(function () {
-    if (location.pathname !== path) { path = location.pathname; built = false; tries = 0; run(); }
+    if (location.pathname !== path) { path = location.pathname; built = false; tries = 0; run(); return; }
+    if (isHome() && built && !document.querySelector('.kua-built')) { built = false; run(); }
   }).observe(document.body, { childList: true, subtree: true });
 })();

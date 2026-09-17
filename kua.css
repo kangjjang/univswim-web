@@ -44,6 +44,9 @@
 .kon [data-block-id^="907ba871"]>.notion-column-block{width:100%!important;margin:0!important}
 /* 원본 컬렉션 뷰는 JS가 다시 그린 뒤 숨김 */
 .kon .kua-src{display:none!important}
+/* 사진을 읽어와야 해서 display:none 대신 화면 밖으로 뺀다 (이미지 로딩 유지) */
+.kon .kua-offscreen{position:absolute!important;left:-99999px!important;top:0!important;
+  width:900px!important;height:1px!important;overflow:hidden!important;pointer-events:none!important}
 /* 컬렉션을 들어냈을 때 남는 빈 문단들 */
 .kon [data-block-id^="4b1ecac9"],.kon [data-block-id^="96849d99"],
 .kon [data-block-id^="8d2453a5"],.kon [data-block-id^="999b7a46"],
@@ -88,6 +91,13 @@
 .kncol .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .kncol .d{flex:none;font-size:12.5px;color:var(--ki3);font-variant-numeric:tabular-nums}
 .kempty{padding:14px 2px;font-size:13.5px;color:var(--ki3)}
+
+.kvid{aspect-ratio:16/9;max-width:780px;margin-inline:auto;background:#1A1D22;border:1px solid #101317;
+  display:grid;place-items:center;align-content:center;gap:14px;text-align:center;padding:20px}
+.kvid iframe{width:100%;height:100%;border:0;display:block}
+.kvid .ph svg{width:54px;height:38px}
+.kvid .ph p{margin:10px 0 0;color:#8B949E;font-size:14px;line-height:1.7}
+.kvid .ph b{display:block;color:#D5DBE2;font-weight:600;font-size:15.5px;margin-bottom:3px}
 
 /* ===== 정보 카드 ===== */
 .kinfo{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}

@@ -16,6 +16,8 @@
       ['연맹 규정', '/intro/goal', 'shield'],
       ['문의하기', '/community/free', 'chat']
     ],
+    youtube: '',          // 예: 'https://www.youtube.com/embed/XXXX' — 비우면 안내 문구
+    youtubeChannel: '',   // 채널 주소 (비우면 '유튜브 채널 바로가기' 링크 숨김)
     info: [
       ['연맹소개', '연혁, 조직도, 임원 안내', '/intro/greeting'],
       ['심판', '심판 강습, 배정, 자격', '/referee/schedule'],
@@ -117,7 +119,8 @@
     return joinRT(row.properties && row.properties[pk]);
   }
   function hrefOf(row) { return '/' + row.id; }
-  function hideSrc(name) {
+  function hideSrc(name, cls) {
+    cls = cls || 'kua-src';
     var blocks = [].slice.call(document.querySelectorAll('.notion-collection_view-block'));
     var rm = rmap(); if (!rm) return;
     blocks.forEach(function (b) {
@@ -126,9 +129,10 @@
       if (!v || !v.collection_id) return;
       var cv = unwrap(rm.collection[v.collection_id]);
       if (cv && joinRT(cv.name) === name) {
-        b.classList.add('kua-src');
+        b.classList.add(cls);
+        if (cls === 'kua-src') b.classList.remove('kua-offscreen');
         var cl = b.closest && b.closest('.notion-column_list-block');
-        if (cl) cl.classList.add('kua-src');
+        if (cl) cl.classList.add(cls);
       }
     });
   }
@@ -201,6 +205,18 @@
     return true;
   }
 
+  /* ---------- 연맹 영상 ---------- */
+  function video(anchor) {
+    var inner = CFG.youtube
+      ? '<div class="kvid"><iframe src="' + esc(CFG.youtube) + '" title="연맹 영상" ' +
+        'allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'
+      : '<div class="kvid"><div class="ph">' +
+        '<svg viewBox="0 0 54 38" aria-hidden="true"><rect width="54" height="38" rx="9" fill="#2A2E35"/>' +
+        '<path d="M22 12l12 7-12 7z" fill="#585F69"/></svg>' +
+        '<p><b>연맹 채널 개설 후 이 자리에 노출됩니다</b>최신 대회 하이라이트 영상이 들어갑니다.</p></div></div>';
+    anchor.appendChild(section('', '연맹 영상', CFG.youtubeChannel || '', '유튜브 채널 바로가기', inner));
+  }
+
   /* ---------- 정보 카드 ---------- */
   function info(anchor) {
     var s = document.createElement('section');
@@ -252,6 +268,9 @@
         '</div><figcaption>' + esc(g.title) + '</figcaption></figure></a>';
     }).join('') + '</div>';
     anchor.appendChild(section('', '포토 갤러리', '/community/gallery', '더보기 +', html));
+    /* 원본을 바로 화면 밖으로 치운다. display:none 을 쓰면 이미지가 로드되지 않아
+       사진을 읽어올 수 없으므로, 다 채운 뒤에 완전히 숨긴다. */
+    hideSrc('갤러리', 'kua-offscreen');
     /* Oopy 가 갤러리 카드를 늦게 렌더링하므로, 사진이 붙을 때까지 몇 번 더 시도한다.
        (사진을 다 채우기 전에는 원본을 숨기지 않는다) */
     var tries = 0;
@@ -303,6 +322,7 @@
         content.parentNode.insertBefore(host, content);
         try { meets(host); } catch (e) {}
         try { news(host); } catch (e) {}
+        try { video(host); } catch (e) {}
         try { info(host); } catch (e) {}
         try { gallery(host); } catch (e) {}
         built = true;

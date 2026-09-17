@@ -307,7 +307,7 @@
   /* ---------- 실행 ---------- */
   var built = false, tries = 0;
   function build() {
-    if (!isHome()) { document.documentElement.classList.remove('kon'); return true; }
+    if (!isHome()) { document.documentElement.classList.remove('kon', 'kpre'); return true; }
     if (!hero()) return false;
     document.documentElement.classList.add('kon');
     if (!built || !document.querySelector('.kua-built')) {
@@ -329,6 +329,9 @@
       }
     }
     try { footer(); } catch (e) {}
+    /* 선제 숨김(.kpre) 해제 — 시안 섹션이 다 들어간 뒤에만 뗀다.
+       갤러리 원본은 gallery() 가 이미 kua-offscreen 으로 치워 둬서 다시 나타나지 않는다. */
+    if (document.querySelector('.kua-built')) document.documentElement.classList.remove('kpre');
     return true;
   }
   function run() { try { if (!build() && ++tries < 80) setTimeout(run, 250); } catch (e) {} }

@@ -16,8 +16,9 @@
       ['연맹 규정', '/intro/goal', 'shield'],
       ['문의하기', '/community/free', 'chat']
     ],
-    youtube: '',          // 예: 'https://www.youtube.com/embed/XXXX' — 비우면 안내 문구
-    youtubeChannel: '',   // 채널 주소 (비우면 '유튜브 채널 바로가기' 링크 숨김)
+    /* 아래 둘은 수동 덮어쓰기용. 비워 두면 노션 메인 페이지에 넣은 유튜브 주소를 자동으로 읽는다. */
+    youtube: '',          // 예: 'https://www.youtube.com/embed/XXXX'
+    youtubeChannel: '',   // 채널 주소 (없으면 '유튜브 채널 바로가기' 링크 숨김)
     info: [
       ['연맹소개', '연혁, 조직도, 임원 안내', '/intro/greeting'],
       ['심판', '심판 강습, 배정, 자격', '/referee/schedule'],
@@ -206,15 +207,99 @@
   }
 
   /* ---------- 연맹 영상 ---------- */
+  /* 연맹이 노션 메인 페이지에 유튜브 주소를 넣으면 그대로 쓴다.
+     평문 주소 / 링크 / 북마크 / 임베드(video·embed 블록) 어느 형태든 잡는다. */
+  var YT_CHAN = /youtube\.com\/(?:channel\/|c\/|user\/|@)[A-Za-z0-9_.%-]+/i;
+
+  /* 영상 ID 추출. watch 는 쿼리에서 따로 뽑는다 (한 덩어리 정규식은 `sv=` 같은
+     다른 파라미터를 v= 로 잘못 읽는다) */
+  function ytId(u) {
+    var m = u.match(/(?:youtube\.com\/(?:embed|live|shorts|v)\/|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+    if (m) return m[1];
+    if (/youtube\.com\/watch/i.test(u)) {
+      m = u.match(/[?&]v=([A-Za-z0-9_-]{6,})/i);
+      if (m) return m[1];
+    }
+    return '';
+  }
+
+  /* 항상 표준 임베드 주소로 다시 만든다. 원문이 긴 문단일 수도 있어 그대로 쓰지 않는다. */
+  function ytEmbed(url, id) {
+    var list = url.match(/[?&]list=([A-Za-z0-9_-]+)/);
+    return 'https://www.youtube.com/embed/' + id + (list ? '?list=' + list[1] : '');
+  }
+
+  /* 노션 블록 하나에서 나올 수 있는 URL 을 전부 긁어모은다 */
+  function urlsOf(b) {
+    var out = [];
+    var P = b.properties || {};
+    ['source', 'link', 'title', 'caption'].forEach(function (k) {
+      var rt = P[k]; if (!rt) return;
+      out.push(joinRT(rt));
+      rt.forEach(function (seg) {
+        ((seg && seg[1]) || []).forEach(function (a) { if (a && a[0] === 'a' && a[1]) out.push(a[1]); });
+      });
+    });
+    if (b.format && b.format.display_source) out.push(b.format.display_source);
+    return out;
+  }
+
+  /* 주의: recordMap 에는 갤러리 하위 페이지의 영상 블록까지 섞여 있다.
+     그래서 recordMap 을 통째로 훑지 말고, 메인 본문에 실제로 그려진 블록만 본다.
+     (DB 행은 컬렉션 뷰 안에 있으므로 함께 제외) */
+  function ytFromNotion() {
+    var found = { video: '', channel: '', blocks: [] };
+    var rm = rmap(), content = document.querySelector('.notion-page-content');
+    if (!rm || !rm.block || !content) return found;
+    var seen = {};
+    [].slice.call(content.querySelectorAll('[data-block-id]')).forEach(function (el) {
+      var id = el.getAttribute('data-block-id');
+      if (!id || seen[id]) return;
+      seen[id] = 1;
+      if (el.closest('.notion-collection_view-block')) return;
+      var b = unwrap(rm.block[id]); if (!b) return;
+      var used = false;
+      urlsOf(b).forEach(function (u) {
+        if (!u || typeof u !== 'string' || u.indexOf('youtu') < 0) return;
+        var vid = ytId(u);
+        if (vid) { if (!found.video) found.video = ytEmbed(u, vid); used = true; return; }
+        var c = u.match(YT_CHAN);
+        if (c) { if (!found.channel) found.channel = c[0].indexOf('http') === 0 ? c[0] : 'https://' + c[0]; used = true; }
+      });
+      if (used) found.blocks.push(id);
+    });
+    return found;
+  }
+
+  /* 우리가 가져다 쓴 원본 블록은 숨긴다. Oopy 가 늦게 그리는 경우가 있어 몇 번 더 시도한다.
+     바로 위 형제가 '영상' 머리말이면 같이 숨긴다 (혼자 남으면 빈 제목만 보인다) */
+  function ytHideSrc(ids, tries) {
+    tries = tries || 0;
+    var left = 0;
+    ids.forEach(function (id) {
+      var el = document.querySelector('[data-block-id="' + id + '"]');
+      if (!el) { left++; return; }
+      el.classList.add('kua-src');
+      var prev = el.previousElementSibling;
+      if (prev && /notion-(header|sub_header|sub_sub_header)-block/.test(prev.className || '') &&
+          /영상|유튜브|video|youtube/i.test(txt(prev))) prev.classList.add('kua-src');
+    });
+    if (left && ++tries < 12) setTimeout(function () { ytHideSrc(ids, tries); }, 700);
+  }
+
   function video(anchor) {
-    var inner = CFG.youtube
-      ? '<div class="kvid"><iframe src="' + esc(CFG.youtube) + '" title="연맹 영상" ' +
+    var yt = ytFromNotion();
+    var src = CFG.youtube || yt.video || '';
+    var chan = CFG.youtubeChannel || yt.channel || '';
+    var inner = src
+      ? '<div class="kvid"><iframe src="' + esc(src) + '" title="연맹 영상" ' +
         'allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'
       : '<div class="kvid"><div class="ph">' +
         '<svg viewBox="0 0 54 38" aria-hidden="true"><rect width="54" height="38" rx="9" fill="#2A2E35"/>' +
         '<path d="M22 12l12 7-12 7z" fill="#585F69"/></svg>' +
-        '<p><b>연맹 채널 개설 후 이 자리에 노출됩니다</b>최신 대회 하이라이트 영상이 들어갑니다.</p></div></div>';
-    anchor.appendChild(section('', '연맹 영상', CFG.youtubeChannel || '', '유튜브 채널 바로가기', inner));
+        '<p><b>노션 메인 페이지에 유튜브 주소를 넣으면 이 자리에 나옵니다</b>최신 대회 하이라이트 영상이 들어갑니다.</p></div></div>';
+    anchor.appendChild(section('', '연맹 영상', chan, '유튜브 채널 바로가기', inner));
+    if (yt.blocks.length) ytHideSrc(yt.blocks);
   }
 
   /* ---------- 정보 카드 ---------- */

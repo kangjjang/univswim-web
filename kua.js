@@ -263,8 +263,14 @@
         if (!u || typeof u !== 'string' || u.indexOf('youtu') < 0) return;
         var vid = ytId(u);
         if (vid) { if (!found.video) found.video = ytEmbed(u, vid); used = true; return; }
-        var c = u.match(YT_CHAN);
-        if (c) { if (!found.channel) found.channel = c[0].indexOf('http') === 0 ? c[0] : 'https://' + c[0]; used = true; }
+        if (YT_CHAN.test(u)) {
+          if (!found.channel) {
+            /* 원문에서 스킴까지 포함한 전체 주소를 먼저 찾는다 (없으면 https 를 붙인다) */
+            var full = u.match(/https?:\/\/[^\s"'<>]*youtube\.com\/(?:channel\/|c\/|user\/|@)[A-Za-z0-9_.%-]+/i);
+            found.channel = full ? full[0] : 'https://www.' + u.match(YT_CHAN)[0];
+          }
+          used = true;
+        }
       });
       if (used) found.blocks.push(id);
     });

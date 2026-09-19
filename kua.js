@@ -298,7 +298,7 @@
     var src = CFG.youtube || yt.video || '';
     var chan = CFG.youtubeChannel || yt.channel || '';
     var inner = src
-      ? '<div class="kvid"><iframe src="' + esc(src) + '" title="연맹 영상" ' +
+      ? '<div class="kvid has-video"><iframe src="' + esc(src) + '" title="연맹 영상" ' +
         'allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'
       : '<div class="kvid"><div class="ph">' +
         '<svg viewBox="0 0 54 38" aria-hidden="true"><rect width="54" height="38" rx="9" fill="#2A2E35"/>' +
